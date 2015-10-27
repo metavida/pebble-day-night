@@ -100,7 +100,7 @@ static void handle_minute_tick(struct tm *tick_time, TimeUnits units_changed) {
     memmove(time_text, &time_text[1], sizeof(time_text) - 1);
   }
   text_layer_set_text(time_text_layer, time_text);
- 
+
   redraw_counter++;
   if (redraw_counter >= REDRAW_INTERVAL) {
     draw_earth();
@@ -112,11 +112,11 @@ static void handle_minute_tick(struct tm *tick_time, TimeUnits units_changed) {
 // Get the time from the phone, which is probably UTC
 // Calculate and store the offset when compared to the local clock
 static void app_message_inbox_received(DictionaryIterator *iterator, void *context) {
-  Tuple *t = dict_find(iterator, 0);
+  Tuple *t = dict_find(iterator, "utc");
   int unixtime = t->value->int32;
   int now = (int)time(NULL);
   time_offset = unixtime - now;
-  status_t s = persist_write_int(TIME_OFFSET_PERSIST, time_offset); 
+  status_t s = persist_write_int(TIME_OFFSET_PERSIST, time_offset);
   if (s) {
     APP_LOG(APP_LOG_LEVEL_DEBUG, "Saved time offset %d with status %d", time_offset, (int) s);
   } else {
@@ -195,7 +195,7 @@ static void init(void) {
     .load = window_load,
     .unload = window_unload,
   });
-  
+
   const bool animated = true;
   window_stack_push(window, animated);
 
