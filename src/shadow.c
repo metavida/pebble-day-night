@@ -125,7 +125,14 @@ static void app_message_inbox_received(DictionaryIterator *iterator, void *conte
     APP_LOG(APP_LOG_LEVEL_DEBUG, "Failed to save time offset with status %d", (int) s);
   }
 
-
+  Tuple *bg = dict_find(iterator, "white_background");
+  bool white_background = bg->value->bool;
+  s = persist_write_bool(WHITE_BACKGROUND_PERSIST, white_background);
+  if (s) {
+    APP_LOG(APP_LOG_LEVEL_DEBUG, "Saved white_background %d with status %d", (int) white_background, (int) s);
+  } else {
+    APP_LOG(APP_LOG_LEVEL_DEBUG, "Failed to save time offset with status %d", (int) s);
+  }
 
   draw_earth();
 }
