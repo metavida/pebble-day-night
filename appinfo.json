@@ -8,8 +8,12 @@
     "watchface": true
   },
   "appKeys": {
-    "dummy": 0
+    "utc": 0,
+    "white_background": 1,
   },
+  "capabilities": [
+    "configurable"
+  ],
   "resources": {
     "media": [
       {"type": "png", "name": "IMAGE_MENU_ICON", "file": "menu_icon.png", "menuIcon": true},

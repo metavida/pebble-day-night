@@ -3,6 +3,7 @@
 
 #define STR_SIZE 20
 #define TIME_OFFSET_PERSIST 1
+#define WHITE_BACKGROUND_PERSIST 2
 #define REDRAW_INTERVAL 15
 #define WIDTH 144
 #define HEIGHT 72
@@ -20,6 +21,7 @@ static GBitmap *image;
 static int redraw_counter;
 // s is set to memory of size STR_SIZE, and temporarily stores strings
 char *s;
+bool white_background;
 #ifdef PBL_SDK_2
 // Local time is wall time, not UTC, so an offset is used to get UTC
 int time_offset;
@@ -122,18 +124,26 @@ static void app_message_inbox_received(DictionaryIterator *iterator, void *conte
   } else {
     APP_LOG(APP_LOG_LEVEL_DEBUG, "Failed to save time offset with status %d", (int) s);
   }
+
+
+
   draw_earth();
 }
 #endif
 
 static void window_load(Window *window) {
-#ifdef BLACK_ON_WHITE
-  GColor background_color = GColorWhite;
-  GColor foreground_color = GColorBlack;
-#else
-  GColor background_color = GColorBlack;
-  GColor foreground_color = GColorWhite;
-#endif
+  white_background = false;
+  if (persist_exists(WHITE_BACKGROUND_PERSIST)) {
+    white_background = persist_read_int(WHITE_BACKGROUND_PERSIST);
+    APP_LOG(APP_LOG_LEVEL_DEBUG, "loaded white_background %s", white_background);
+  }
+  if (white_background) {
+    GColor background_color = GColorWhite;
+    GColor foreground_color = GColorBlack;
+  } else {
+    GColor background_color = GColorBlack;
+    GColor foreground_color = GColorWhite;
+  }
   window_set_background_color(window, background_color);
   Layer *window_layer = window_get_root_layer(window);
   GRect bounds = layer_get_bounds(window_layer);

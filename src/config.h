@@ -1,3 +1,3 @@
 
-// Comment or uncomment to invert the text
-//#define BLACK_ON_WHITE
+// All configuration has been moved
+// to the app configuration/settings screen.
