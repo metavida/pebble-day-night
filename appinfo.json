@@ -9,7 +9,7 @@
   },
   "appKeys": {
     "utc": 0,
-    "white_background": 1,
+    "white_background": 1
   },
   "capabilities": [
     "configurable"
