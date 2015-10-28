@@ -24,7 +24,7 @@ function returnConfigToPebble(config) {
 
   Pebble.sendAppMessage({
     "utc": getUTCTime(),
-    "white_background": !!config.white_background,
+    "white_background": config.white_background ? 1 : 0,
   });
 }
 

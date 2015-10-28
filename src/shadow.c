@@ -8,6 +8,11 @@
 #define WIDTH 144
 #define HEIGHT 72
 
+enum {
+  TIME_OFFSET_KEY = 0x0,
+  WHITE_BACKGROUND_KEY = 0x1,
+};
+
 static Window *window;
 static TextLayer *time_text_layer;
 static TextLayer *date_text_layer;
@@ -114,7 +119,7 @@ static void handle_minute_tick(struct tm *tick_time, TimeUnits units_changed) {
 // Get the time from the phone, which is probably UTC
 // Calculate and store the offset when compared to the local clock
 static void app_message_inbox_received(DictionaryIterator *iterator, void *context) {
-  Tuple *t = dict_find(iterator, "utc");
+  Tuple *t = dict_find(iterator, TIME_OFFSET_KEY);
   int unixtime = t->value->int32;
   int now = (int)time(NULL);
   time_offset = unixtime - now;
@@ -125,8 +130,8 @@ static void app_message_inbox_received(DictionaryIterator *iterator, void *conte
     APP_LOG(APP_LOG_LEVEL_DEBUG, "Failed to save time offset with status %d", (int) s);
   }
 
-  Tuple *bg = dict_find(iterator, "white_background");
-  bool white_background = bg->value->bool;
+  Tuple *bg = dict_find(iterator, WHITE_BACKGROUND_KEY);
+  bool white_background = bg->value->uint8 == 1;
   s = persist_write_bool(WHITE_BACKGROUND_PERSIST, white_background);
   if (s) {
     APP_LOG(APP_LOG_LEVEL_DEBUG, "Saved white_background %d with status %d", (int) white_background, (int) s);
@@ -139,17 +144,19 @@ static void app_message_inbox_received(DictionaryIterator *iterator, void *conte
 #endif
 
 static void window_load(Window *window) {
+  // Set our default values
   white_background = false;
+  GColor background_color = GColorBlack;
+  GColor foreground_color = GColorWhite;
+
+  // Override the defaults based on our persisted values
   if (persist_exists(WHITE_BACKGROUND_PERSIST)) {
     white_background = persist_read_int(WHITE_BACKGROUND_PERSIST);
-    APP_LOG(APP_LOG_LEVEL_DEBUG, "loaded white_background %s", white_background);
+    APP_LOG(APP_LOG_LEVEL_DEBUG, "loaded white_background %d", white_background);
   }
   if (white_background) {
-    GColor background_color = GColorWhite;
-    GColor foreground_color = GColorBlack;
-  } else {
-    GColor background_color = GColorBlack;
-    GColor foreground_color = GColorWhite;
+    background_color = GColorWhite;
+    foreground_color = GColorBlack;
   }
   window_set_background_color(window, background_color);
   Layer *window_layer = window_get_root_layer(window);
